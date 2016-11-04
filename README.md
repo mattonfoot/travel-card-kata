@@ -1,5 +1,12 @@
 #Travel Card Kata
-This is a simple JavaScript Kata to simulate a simple travel card system. There are two options for running it on your local system depending on whether you prefer NodeJS or Containers.
+This is a simple JavaScript Kata to simulate a simple travel card system. There are three options for running it on your local system depending on whether you prefer NodeJS or Containers.
+
+##Running in a browser
+Simply open the ```index.htm``` file in chrome.
+
+```bash
+$ open index.htm
+```
 
 ##Running with NodeJS
 Start by ensuring the you have the most recent version of NodeJS and NPM installed.
