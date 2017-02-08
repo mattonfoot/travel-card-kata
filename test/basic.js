@@ -1,7 +1,7 @@
 const should = require('chai').should();
 const TravelCard = require('../lib/TravelCard.js');
 const TripLog = require('../lib/TripLog.js');
-const Bus = require('../lib/Bus.js');
+const buses = require('../lib/Buses.js');
 const stations = require('../lib/Stations.js');
 const FareCalculator = require('../lib/FareCalculator.js');
 
@@ -10,56 +10,56 @@ describe('A fare calculator', function () {
   it('will charge £2.50 for travel around "Anywhere in Zone 1"', function () {
     var fc = new FareCalculator();
 
-    fc.getFare([1], [1]).should.equal(2.50);
-    fc.getFare([1], [1, 2]).should.equal(2.50);
-    fc.getFare([1], [2]).should.not.equal(2.50);
-    fc.getFare([2], [2]).should.not.equal(2.50);
-    fc.getFare([1], [3]).should.not.equal(2.50);
-    fc.getFare([2], [3]).should.not.equal(2.50);
+    fc.fare([1], [1]).should.equal(2.50);
+    fc.fare([1], [1, 2]).should.equal(2.50);
+    fc.fare([1], [2]).should.not.equal(2.50);
+    fc.fare([2], [2]).should.not.equal(2.50);
+    fc.fare([1], [3]).should.not.equal(2.50);
+    fc.fare([2], [3]).should.not.equal(2.50);
   });
 
   it('will charge £2.00 for travel around "Any one zone outside zone 1"', function () {
     var fc = new FareCalculator();
 
-    fc.getFare([1], [1]).should.not.equal(2.00);
-    fc.getFare([1], [1, 2]).should.not.equal(2.00);
-    fc.getFare([1], [2]).should.not.equal(2.00);
-    fc.getFare([2], [2]).should.equal(2.00);
-    fc.getFare([1], [3]).should.not.equal(2.00);
-    fc.getFare([2], [3]).should.not.equal(2.00);
+    fc.fare([1], [1]).should.not.equal(2.00);
+    fc.fare([1], [1, 2]).should.not.equal(2.00);
+    fc.fare([1], [2]).should.not.equal(2.00);
+    fc.fare([2], [2]).should.equal(2.00);
+    fc.fare([1], [3]).should.not.equal(2.00);
+    fc.fare([2], [3]).should.not.equal(2.00);
   });
 
   it('will charge £3.00 for travel around "Any two zones including zone 1"', function () {
     var fc = new FareCalculator();
 
-    fc.getFare([1], [1]).should.not.equal(3.00);
-    fc.getFare([1], [1, 2]).should.not.equal(3.00);
-    fc.getFare([1], [2]).should.equal(3.00);
-    fc.getFare([2], [2]).should.not.equal(3.00);
-    fc.getFare([1], [3]).should.not.equal(3.00);
-    fc.getFare([2], [3]).should.not.equal(2.00);
+    fc.fare([1], [1]).should.not.equal(3.00);
+    fc.fare([1], [1, 2]).should.not.equal(3.00);
+    fc.fare([1], [2]).should.equal(3.00);
+    fc.fare([2], [2]).should.not.equal(3.00);
+    fc.fare([1], [3]).should.not.equal(3.00);
+    fc.fare([2], [3]).should.not.equal(2.00);
   });
 
   it('will charge £2.25 for travel around "Any two zones excluding zone 1"', function () {
     var fc = new FareCalculator();
 
-    fc.getFare([1], [1]).should.not.equal(2.25);
-    fc.getFare([1], [1, 2]).should.not.equal(2.25);
-    fc.getFare([1], [2]).should.not.equal(2.25);
-    fc.getFare([2], [2]).should.not.equal(2.25);
-    fc.getFare([1], [3]).should.not.equal(2.25);
-    fc.getFare([2], [3]).should.equal(2.25);
+    fc.fare([1], [1]).should.not.equal(2.25);
+    fc.fare([1], [1, 2]).should.not.equal(2.25);
+    fc.fare([1], [2]).should.not.equal(2.25);
+    fc.fare([2], [2]).should.not.equal(2.25);
+    fc.fare([1], [3]).should.not.equal(2.25);
+    fc.fare([2], [3]).should.equal(2.25);
   });
 
   it('will charge £3.20 for travel around "Any three zones"', function () {
     var fc = new FareCalculator();
 
-    fc.getFare([1], [1]).should.not.equal(3.20);
-    fc.getFare([1], [1, 2]).should.not.equal(3.20);
-    fc.getFare([1], [2]).should.not.equal(3.20);
-    fc.getFare([2], [2]).should.not.equal(3.20);
-    fc.getFare([1], [3]).should.equal(3.20);
-    fc.getFare([2], [3]).should.not.equal(3.20);
+    fc.fare([1], [1]).should.not.equal(3.20);
+    fc.fare([1], [1, 2]).should.not.equal(3.20);
+    fc.fare([1], [2]).should.not.equal(3.20);
+    fc.fare([2], [2]).should.not.equal(3.20);
+    fc.fare([1], [3]).should.equal(3.20);
+    fc.fare([2], [3]).should.not.equal(3.20);
   });
 
 });
@@ -180,7 +180,7 @@ describe('A travel card with more credit than the maximum fare', function () {
     var startingBalance = triplog.getBalance(card);
 
     station.requestEntryWithCard(card).should.equal(true);
-    triplog.getBalance(card).should.equal(startingBalance - fc.getMaxFare());
+    triplog.getBalance(card).should.equal(startingBalance - fc.maxFare());
   });
 
   it('will be charged the correct fare on exit', function () {
@@ -211,7 +211,7 @@ describe('A travel card that hasn\'t been used at an entry gate', function () {
     var startingBalance = triplog.getBalance(card);
 
     station.requestExitWithCard(card).should.equal(true);
-    triplog.getBalance(card).should.equal(startingBalance - fc.getMaxFare());
+    triplog.getBalance(card).should.equal(startingBalance - fc.maxFare());
   });
 
 });
@@ -221,7 +221,7 @@ describe('A travel card used on a bus', function () {
   it('will be charged the same for each journey', function () {
     var card = new TravelCard('credit-4');
     var triplog = new TripLog(new FareCalculator());
-    var bus = new Bus('123', triplog);
+    var bus = buses(triplog)['328'];
 
     triplog.addCredit(card, 4.00);
     var startingBalance = triplog.getBalance(card);
@@ -237,13 +237,14 @@ describe('A travel card used on a bus', function () {
 });
 
 describe('A user loading a card with £30', function () {
+  var expected = 30.00 - 2.50 - 1.80 - 2.00;
 
-  it('will be charged correctly for three seperate journeys', function () {
+  it('will be charged £' + expected + ' for three seperate journeys', function () {
     var card = new TravelCard('credit-three-trips');
     var triplog = new TripLog(new FareCalculator());
     var holborn = stations(triplog).Holborn;
     var earlsCourt = stations(triplog)['Earl’s Court'];
-    var bus = new Bus('328', triplog);
+    var bus = buses(triplog)['328'];
     var hammersmith = stations(triplog).Hammersmith;
 
     triplog.addCredit(card, 30.00);
@@ -253,7 +254,7 @@ describe('A user loading a card with £30', function () {
     earlsCourt.requestEntryWithCard(card);
     hammersmith.requestExitWithCard(card);
 
-    triplog.getBalance(card).should.equal(30.00 - 2.50 - 1.80 - 2.00);
+    triplog.getBalance(card).should.equal(expected);
   });
 
 });
